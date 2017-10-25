@@ -26,12 +26,6 @@ import structurePackage.Element;
 
 public class ExcelImporter {
 
-    public static void main(String[] args) {
-        LinkedHashMap<String, Element> elements = new LinkedHashMap<>();
-        importExcel("RESOURCE_Ali.xlsx", elements);
-        System.out.println("boz");
-    }
-
     public static boolean importExcel(String address, LinkedHashMap<String, Element> elements) {
 
         try {
