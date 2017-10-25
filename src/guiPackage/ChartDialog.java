@@ -4,21 +4,17 @@ import org.jfree.chart.*;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.category.GroupedStackedBarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.KeyToGroupMap;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.GradientPaintTransformType;
-import org.jfree.ui.StandardGradientPaintTransformer;
+import policyPackage.resources.ResourceHandler;
 import structurePackage.Alternative;
 import structurePackage.Element;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
 
 public class ChartDialog extends JFrame {
     private JPanel contentPane;
@@ -26,17 +22,24 @@ public class ChartDialog extends JFrame {
     private JButton buttonCancel;
     private JPanel panel;
     private int state = 0;
-    private HashMap<String, Element> elements;
+    private LinkedHashMap<String, Element> elements;
     private Dialog mainFrame;
     private Color resourceColor = new Color(38, 193, 212);
     private Color eqpColor = new Color(255, 186, 28);
     private Color deliveryColor = new Color(231, 56, 32);
+    private int screenWidth = 0;
+    private int screenHeigth = 0;
+    ChartPanel chartPanel = null;
 
-    public ChartDialog(HashMap<String, Element> elements, Dialog mainFrame) {
+    public ChartDialog(LinkedHashMap<String, Element> elements, Dialog mainFrame) {
 
         setContentPane(contentPane);
         this.elements = elements;
         this.mainFrame = mainFrame;
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screenWidth = (int) screenSize.getWidth();
+        screenHeigth = (int) screenSize.getHeight();
 
         getRootPane().setDefaultButton(buttonOK);
 
@@ -74,7 +77,7 @@ public class ChartDialog extends JFrame {
         this.setIconImage(img.getImage());
         state = 1;
 
-        TreeMap<String, String[]> tableRows = new TreeMap<>();
+        LinkedHashMap<String, String[]> tableRows = new LinkedHashMap<>();
         for (Element element : elements.values()) {
             for (Alternative alternative : element.alternatives.values()) {
                 tableRows.put(alternative.getAlternativeName()
@@ -96,7 +99,7 @@ public class ChartDialog extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
-        setSize(600, 500);
+        setSize(screenWidth * 2 / 3 , screenHeigth*2/3);
         setLocationRelativeTo(null);
 //        pack();
     }
@@ -173,8 +176,129 @@ public class ChartDialog extends JFrame {
         plot.setFixedLegendItems(createLegendItems());
         panel.setLayout(new BorderLayout());
         panel.add(chartPanel, BorderLayout.CENTER);
-        setSize(600, 500);
+        setSize(screenWidth * 2 / 3 , screenHeigth*2/3);
         setLocationRelativeTo(null);
+    }
+
+    void drawBar() {
+
+        ImageIcon img = new ImageIcon("resources/bar.png");
+        this.setIconImage(img.getImage());
+        state = 3;
+        setSize(screenWidth * 2 / 3 , screenHeigth*2/3);
+        setLocationRelativeTo(null);
+
+        panel.setLayout(new BorderLayout());
+
+        final DefaultComboBoxModel<String> alternatives = new DefaultComboBoxModel<>();
+        final LinkedHashMap<String, DefaultCategoryDataset> datasets = new LinkedHashMap<>();
+        for (Element element : elements.values()) {
+            for (Alternative alternative : element.alternatives.values()) {
+                alternatives.addElement(alternative.getAlternativeName());
+                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+                for(String resource: alternative.resourcesCF.keySet()){
+                    dataset.addValue(alternative.resourcesCF.get(resource), "CarbonFootprint", ResourceHandler.i().getMTL(resource).getName());
+                }
+                datasets.put(alternative.getAlternativeName() + "RES", dataset);
+
+                DefaultCategoryDataset dataset2 = new DefaultCategoryDataset();
+                for(String equipment: alternative.equipmentCF.keySet()){
+                    dataset2.addValue(alternative.equipmentCF.get(equipment), "CarbonFootprint", ResourceHandler.i().getEQP(equipment).getName());
+                }
+                datasets.put(alternative.getAlternativeName() + "EQP", dataset2);
+            }
+        }
+        final JComboBox<String> alternativesJCombo = new JComboBox<>(alternatives);
+        final JComboBox<String> typeJCombo = new JComboBox<>(new String[]{"Resources", "Equipments"});
+        drawBar(datasets.get(alternativesJCombo.getSelectedItem() + "RES"), String.valueOf(alternativesJCombo.getSelectedItem()), (String) typeJCombo.getSelectedItem());
+
+        alternativesJCombo.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                String type;
+                if(((String)typeJCombo.getSelectedItem()).equalsIgnoreCase("Resources"))
+                    type = "RES";
+                else
+                    type = "EQP";
+                panel.remove(chartPanel);
+                drawBar(datasets.get(alternativesJCombo.getSelectedItem() + type), String.valueOf(alternativesJCombo.getSelectedItem()), (String)typeJCombo.getSelectedItem());
+                panel.add(chartPanel, BorderLayout.CENTER);
+                validate();
+                repaint();
+            }
+        });
+        typeJCombo.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                String type;
+                if(((String)typeJCombo.getSelectedItem()).equalsIgnoreCase("resources"))
+                    type = "RES";
+                else
+                    type = "EQP";
+                panel.remove(chartPanel);
+                drawBar(datasets.get(alternativesJCombo.getSelectedItem() + type), String.valueOf(alternativesJCombo.getSelectedItem()), (String)typeJCombo.getSelectedItem());
+                panel.add(chartPanel, BorderLayout.CENTER);
+                validate();
+                repaint();
+            }
+        });
+
+
+//        panel.add(chartPanel, BorderLayout.CENTER);
+        JPanel jPanel = new JPanel();
+        jPanel.add(alternativesJCombo);
+        jPanel.add(typeJCombo);
+        panel.add(jPanel, BorderLayout.SOUTH);
+//        panel.add(alternativesJCombo, BorderLayout.SOUTH);
+//        panel.add(typeJCombo, BorderLayout.SOUTH);
+
+    }
+
+    private void drawBar(DefaultCategoryDataset dataset, String alternative, String type) {
+        JFreeChart chart = ChartFactory.createStackedBarChart(
+                alternative + " " + type,                   // chart title
+                type,                    // domain axis label
+                "kg CO2-e",                         // range axis label
+                dataset,                     // data
+                PlotOrientation.HORIZONTAL,    // the plot orientation
+                true,                        // legend
+                true,                        // tooltips
+                false                        // urls
+        );
+
+//        Paint p1 = deliveryColor;
+
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        ((BarRenderer) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        renderer.setShadowVisible(false);
+        renderer.setDrawBarOutline(false);
+        chart.setBackgroundPaint(Color.white);
+        plot.setBackgroundPaint(Color.white);
+
+        plot.setDomainGridlinePaint(Color.black);
+        plot.setDomainGridlinesVisible(true);
+
+        plot.setRangeGridlinePaint(Color.black);
+        plot.setRangeGridlinesVisible(true);
+
+        plot.setRangeMinorGridlinePaint(Color.gray);
+        plot.setRangeMinorGridlinesVisible(true);
+
+//        renderer.setSeriesToGroupMap(map);
+
+//        renderer.set
+//
+//        for (int j = 0; j <= i; j++) {
+//            renderer.setSeriesPaint(j * 3, p1);
+//            renderer.setSeriesPaint(j * 3 + 1, p2);
+//            renderer.setSeriesPaint(j * 3 + 2, p3);
+//        }
+        System.out.println("column count" + dataset.getColumnCount());
+        System.out.println("row count" + dataset.getRowCount());
+
+        ChartPanel chartPanel = new ChartPanel(chart);
+        plot.setFixedLegendItems(createLegendItems());
+        this.chartPanel = chartPanel;
+
     }
 
     private LegendItemCollection createLegendItems() {
@@ -199,6 +323,9 @@ public class ChartDialog extends JFrame {
             case 2:
                 mainFrame.stackedB.setEnabled(true);
                 break;
+            case 3:
+                mainFrame.barB.setEnabled(true);
+                break;
         }
     }
 
@@ -211,6 +338,5 @@ public class ChartDialog extends JFrame {
         // add your code here if necessary
         dispose();
     }
-
 
 }

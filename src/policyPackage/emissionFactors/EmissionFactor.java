@@ -1,6 +1,5 @@
 package policyPackage.emissionFactors;
 
-import java.util.HashMap;
 
 public class EmissionFactor {
 

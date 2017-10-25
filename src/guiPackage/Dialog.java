@@ -22,7 +22,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -55,11 +55,11 @@ public class Dialog extends JFrame {
     JButton pieB;
     JButton tableB;
     private Integer widthSize = null;
-    private HashMap<String, String> allCriteria = new HashMap<>();
-    private HashMap<String, JSlider> allSliders = new HashMap<>();
-    private HashMap<String, JComboBox> allSupliers = new HashMap<>();
-    private HashMap<String, JCheckBox> allBoxes = new HashMap<>();
-    HashMap<String, Element> elements = new HashMap<>();
+    private LinkedHashMap<String, String> allCriteria = new LinkedHashMap<>();
+    private LinkedHashMap<String, JSlider> allSliders = new LinkedHashMap<>();
+    private LinkedHashMap<String, JComboBox> allSupliers = new LinkedHashMap<>();
+    private LinkedHashMap<String, JCheckBox> allBoxes = new LinkedHashMap<>();
+    LinkedHashMap<String, Element> elements = new LinkedHashMap<>();
 
     private static Color DEFAULT_TEXT_COLOR = new Color(187, 187, 187);
 
@@ -680,7 +680,7 @@ public class Dialog extends JFrame {
     }
 
     private void initializeEmissions() {
-        HashMap<String, Emission> allEmissions = EmissionFactor2.getInstance().getAllEF();
+        LinkedHashMap<String, Emission> allEmissions = EmissionFactor2.getInstance().getAllEF();
         DefaultTableModel model = new DefaultTableModel(
                 // TODO: 7/28/2017 چزا این نیست؟
                 new Object[]{"Emission", "Value", "unit"}, 0

@@ -2,8 +2,9 @@ package policyPackage;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -26,12 +27,12 @@ import structurePackage.Element;
 public class ExcelImporter {
 
     public static void main(String[] args) {
-        HashMap<String, Element> elements = new HashMap<>();
+        LinkedHashMap<String, Element> elements = new LinkedHashMap<>();
         importExcel("RESOURCE_Ali.xlsx", elements);
         System.out.println("boz");
     }
 
-    public static boolean importExcel(String address, HashMap<String, Element> elements) {
+    public static boolean importExcel(String address, LinkedHashMap<String, Element> elements) {
 
         try {
             FileInputStream excelFile = new FileInputStream(new File(address));
@@ -51,15 +52,15 @@ public class ExcelImporter {
         }
     }
 
-    private static void getEquipments(HashMap<String, Element> elements, Workbook workbook) {
+    private static void getEquipments(LinkedHashMap<String, Element> elements, Workbook workbook) {
         Sheet dataTypeSheet = workbook.getSheetAt(3);
         Iterator<Row> iterator = dataTypeSheet.iterator();
-        HashMap<Integer, String> resourceCodes = new HashMap<>();
-        HashMap<Integer, String> resourceNames = new HashMap<>();
-        HashMap<Integer, String> energySources = new HashMap<>();
-        HashMap<Integer, Double> powers = new HashMap<>();
-        HashMap<Integer, String> units = new HashMap<>();
-        HashMap<Integer, String> types = new HashMap<>();
+        LinkedHashMap<Integer, String> resourceCodes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> resourceNames = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> energySources = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Double> powers = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> units = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> types = new LinkedHashMap<>();
 
         while (iterator.hasNext()) {
             Row currentRow = iterator.next();
@@ -210,7 +211,7 @@ public class ExcelImporter {
     private static void getSuppliers(Workbook workbook) {
         Sheet dataTypeSheet = workbook.getSheetAt(1);
         Iterator<Row> iterator = dataTypeSheet.iterator();
-        HashMap<Integer, String> titles = new HashMap<>();
+        LinkedHashMap<Integer, String> titles = new LinkedHashMap<>();
         String efUnit = "";
 
         int y = 0;
@@ -296,14 +297,14 @@ public class ExcelImporter {
         }
     }
 
-    private static void getResources(HashMap<String, Element> elements, Workbook workbook) {
+    private static void getResources(LinkedHashMap<String, Element> elements, Workbook workbook) {
         Sheet datatypeSheet = workbook.getSheetAt(2);
         Iterator<Row> iterator = datatypeSheet.iterator();
-        HashMap<Integer, String> resourceCodes = new HashMap<>();
-        HashMap<Integer, String> resourceUnits = new HashMap<>();
-        HashMap<Integer, String> resourceNames = new HashMap<>();
-        HashMap<Integer, String> descriptions = new HashMap<>();
-        HashMap<Integer, String> types = new HashMap<>();
+        LinkedHashMap<Integer, String> resourceCodes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> resourceUnits = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> resourceNames = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> descriptions = new LinkedHashMap<>();
+        LinkedHashMap<Integer, String> types = new LinkedHashMap<>();
 
         int y = 0;
 
@@ -426,10 +427,10 @@ public class ExcelImporter {
         System.out.println("boz");
     }
 
-    private static void getCriteria(HashMap<String, Element> elements, Workbook workbook) {
+    private static void getCriteria(LinkedHashMap<String, Element> elements, Workbook workbook) {
         Sheet dataTypeSheet = workbook.getSheetAt(0);
         Iterator<Row> iterator = dataTypeSheet.iterator();
-        HashMap<Integer, Criterion> criteria = new HashMap<>();
+        LinkedHashMap<Integer, Criterion> criteria = new LinkedHashMap<>();
 
 
         int y = 0;

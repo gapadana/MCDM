@@ -6,14 +6,14 @@ package policyPackage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
 public class EmissionFactor2 {
 
     // TODO: 7/21/2017 getEF EmissionFactor2 from config file
-    private HashMap<String, Emission> emissions;
+    private LinkedHashMap<String, Emission> emissions;
     private static EmissionFactor2 instance = null;
 
     public static final EmissionFactor2 getInstance() {
@@ -50,7 +50,7 @@ public class EmissionFactor2 {
         }
 
         String emS = "";
-        this.emissions = new HashMap<String, Emission>();
+        this.emissions = new LinkedHashMap<String, Emission>();
         try {
             for(Map.Entry<Object, Object> property: properties.entrySet()){
                 emS = String.valueOf(property.getKey());
@@ -77,7 +77,7 @@ public class EmissionFactor2 {
         }
     }
 
-    public HashMap<String, Emission> getAllEF() {
+    public LinkedHashMap<String, Emission> getAllEF() {
         return emissions;
     }
 

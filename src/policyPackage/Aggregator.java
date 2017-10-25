@@ -2,10 +2,8 @@
 package policyPackage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
-import policyPackage.resources.ResourceHandler;
 import structurePackage.*;
 
 public class Aggregator {
@@ -19,7 +17,7 @@ public class Aggregator {
 //        new Aggregator();
 //    }
 
-    public Aggregator(HashMap<String, Element> elements) {
+    public Aggregator(LinkedHashMap<String, Element> elements) {
         for (String elementKey : elements.keySet()) {
             elements.get(elementKey).calcAllCFs();
             elements.get(elementKey).calcMaxes();

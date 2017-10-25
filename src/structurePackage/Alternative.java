@@ -9,27 +9,27 @@ import policyPackage.resources.Material;
 import policyPackage.suppliers.Supplier;
 import policyPackage.suppliers.SupplierHandler;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Alternative {
 
-    public HashMap<String, Criterion> criteria;
+    public LinkedHashMap<String, Criterion> criteria;
 
     private String alternativeName;
-    public HashMap<String, Material> materials;
-    public HashMap<String, Equipment> equipments;
-    private HashMap<String, Double> resourcesCF = new HashMap<>();
-    private HashMap<String, Double> deliveryCF = new HashMap<>();
-    private HashMap<String, Double> equipmentCF = new HashMap<>();
+    public LinkedHashMap<String, Material> materials;
+    public LinkedHashMap<String, Equipment> equipments;
+    public LinkedHashMap<String, Double> resourcesCF = new LinkedHashMap<>();
+    private LinkedHashMap<String, Double> deliveryCF = new LinkedHashMap<>();
+    public LinkedHashMap<String, Double> equipmentCF = new LinkedHashMap<>();
 //    private double cf2 = 0;
 //    private double cf3 = 0;
     private double index;
 
     public Alternative(String alternativeName) {
         this.alternativeName = alternativeName;
-        equipments = new HashMap<>();
-        materials = new HashMap<>();
-        criteria = new HashMap<>();
+        equipments = new LinkedHashMap<>();
+        materials = new LinkedHashMap<>();
+        criteria = new LinkedHashMap<>();
     }
 
     public void addCriteria(String criteriaName, Criterion criterion){

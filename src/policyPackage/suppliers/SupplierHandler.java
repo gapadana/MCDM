@@ -1,13 +1,13 @@
 package policyPackage.suppliers;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class SupplierHandler {
 
-    private HashMap <String, HashSet<Supplier>> suppliers = new HashMap<>();
-    private HashMap <String, Supplier> selectedSuppliers = new HashMap<>();
+    private LinkedHashMap <String, HashSet<Supplier>> suppliers = new LinkedHashMap<>();
+    private LinkedHashMap <String, Supplier> selectedSuppliers = new LinkedHashMap<>();
 
     public static SupplierHandler i(){
         if(instance == null)

@@ -3,11 +3,7 @@ package structurePackage;
 import policyPackage.Criterion;
 import policyPackage.Weights;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.lang.StrictMath.abs;
+import java.util.LinkedHashMap;
 
 /**
  * Created by aebra on 7/21/2017.
@@ -15,13 +11,13 @@ import static java.lang.StrictMath.abs;
 public class Element {
 
     public String elementName;
-    public HashMap<String, Alternative> alternatives;
-    private HashMap<String, Double> maxCriteria;
+    public LinkedHashMap<String, Alternative> alternatives;
+    private LinkedHashMap<String, Double> maxCriteria;
 
     public Element(String elementName) {
         this.elementName = elementName;
-        alternatives = new HashMap<String, Alternative>();
-        maxCriteria = new HashMap<String, Double>();
+        alternatives = new LinkedHashMap<String, Alternative>();
+        maxCriteria = new LinkedHashMap<String, Double>();
     }
 
     public void addAlternative(String alternativeName, Alternative alternative) {
@@ -37,7 +33,7 @@ public class Element {
 
     public void calcMaxes() {
         for (String alternativeKey: alternatives.keySet()) {
-            HashMap<String, Criterion> criteria = alternatives.get(alternativeKey).criteria;
+            LinkedHashMap<String, Criterion> criteria = alternatives.get(alternativeKey).criteria;
             for (String key: criteria.keySet()) {
                 if(maxCriteria.containsKey(key)){
                     if(maxCriteria.get(key) < criteria.get(key).value)

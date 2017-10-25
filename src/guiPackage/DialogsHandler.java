@@ -2,7 +2,7 @@ package guiPackage;
 
 import structurePackage.Element;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class DialogsHandler {
 
@@ -14,7 +14,7 @@ public class DialogsHandler {
     }
 
     private static DialogsHandler instance = null;
-    private HashMap<String, Element> elements;
+    private LinkedHashMap<String, Element> elements;
     private boolean initialized = false;
 
     public static DialogsHandler i() {
@@ -26,7 +26,7 @@ public class DialogsHandler {
     private DialogsHandler() {
     }
 
-    void inizialize(HashMap<String, Element> elements) {
+    void inizialize(LinkedHashMap<String, Element> elements) {
         this.elements = elements;
         initialized = true;
     }
@@ -57,6 +57,10 @@ public class DialogsHandler {
     }
 
     void drawBar() {
-
+        ChartDialog chartDialog = new ChartDialog(elements, frame);
+        chartDialog.setFocusable(true);
+        chartDialog.setVisible(true);
+        frame.barB.setEnabled(false);
+        chartDialog.drawBar();
     }
 }

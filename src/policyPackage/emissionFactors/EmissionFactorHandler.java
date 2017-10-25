@@ -1,6 +1,6 @@
 package policyPackage.emissionFactors;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class EmissionFactorHandler {
 
@@ -14,10 +14,10 @@ public class EmissionFactorHandler {
 
     private EmissionFactorHandler(){}
 
-    private HashMap<String, HashMap<String, EmissionFactor>> efs = new HashMap<>();
+    private LinkedHashMap<String, LinkedHashMap<String, EmissionFactor>> efs = new LinkedHashMap<>();
 
     public void addEmissionFactor(String code, EmissionFactor emissionFactor){
-        HashMap<String, EmissionFactor> map = new HashMap<>();
+        LinkedHashMap<String, EmissionFactor> map = new LinkedHashMap<>();
         if(efs.containsKey(code)) {
             map = efs.get(code);
         }
@@ -26,7 +26,7 @@ public class EmissionFactorHandler {
     }
 
     public EmissionFactor getEf(String code) {
-        HashMap<String, EmissionFactor> resourceEFs = efs.get(code);
+        LinkedHashMap<String, EmissionFactor> resourceEFs = efs.get(code);
         for (String key: resourceEFs.keySet()) {
             if(key.toLowerCase().contains("co2"))
                 return resourceEFs.get(key);

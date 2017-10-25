@@ -1,6 +1,6 @@
 package policyPackage.resources;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class ResourceHandler {
 
@@ -12,8 +12,8 @@ public class ResourceHandler {
         return instance;
     }
 
-    private HashMap<String, ShortEquipment> equipments = new HashMap<>();
-    private HashMap<String, ShortMaterial> materials = new HashMap<>();
+    private LinkedHashMap<String, ShortEquipment> equipments = new LinkedHashMap<>();
+    private LinkedHashMap<String, ShortMaterial> materials = new LinkedHashMap<>();
 
     public boolean hasMTL(String code){
         return materials.containsKey(code);
@@ -49,5 +49,8 @@ public class ResourceHandler {
 
     public ShortMaterial getMTL(String materialCode) {
         return materials.get(materialCode);
+    }
+    public ShortEquipment getEQP(String equipmentCode) {
+        return equipments.get(equipmentCode);
     }
 }

@@ -1,14 +1,10 @@
 package policyPackage;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Weights {
     // TODO: 7/21/2017 +/- of criteria
-    private HashMap<String, Double> weights;
+    private LinkedHashMap<String, Double> weights;
 
     private static Weights instance = null;
 
@@ -20,7 +16,7 @@ public class Weights {
     }
 
     private Weights() {
-        weights = new HashMap<>();
+        weights = new LinkedHashMap<>();
     }
 
     public void print(String string) {
