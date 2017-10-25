@@ -73,7 +73,7 @@ public class ChartDialog extends JFrame {
     }
 
     void drawTable() {
-        ImageIcon img = new ImageIcon("resources/table.png");
+        ImageIcon img = new ImageIcon(getClass().getResource("/img/table.png"));
         this.setIconImage(img.getImage());
         state = 1;
 
@@ -105,7 +105,7 @@ public class ChartDialog extends JFrame {
     }
 
     void drawStackBar() {
-        ImageIcon img = new ImageIcon("resources/stack.png");
+        ImageIcon img = new ImageIcon(getClass().getResource("/img/stack.png"));
         this.setIconImage(img.getImage());
         state = 2;
 
@@ -182,7 +182,7 @@ public class ChartDialog extends JFrame {
 
     void drawBar() {
 
-        ImageIcon img = new ImageIcon("resources/bar.png");
+        ImageIcon img = new ImageIcon(getClass().getResource("/img/bar.png"));
         this.setIconImage(img.getImage());
         state = 3;
         setSize(screenWidth * 2 / 3 , screenHeigth*2/3);

@@ -1,6 +1,5 @@
 package guiPackage;
 
-import com.sun.deploy.uitoolkit.ui.DialogHook;
 import policyPackage.*;
 import policyPackage.resources.ResourceHandler;
 import policyPackage.suppliers.Supplier;
@@ -372,19 +371,19 @@ public class Dialog extends JFrame {
         optionsPanel.add(getDescriptionLabel("equipments and materials CF from max to min"));
         optionsPanel.add(getDescriptionLabel("pie chart of percentage of each alternatives"));
 
-        JLabel tableIcon = new JLabel(getImageWithSize("./resources/table.png", imageSize, imageSize));
+        JLabel tableIcon = new JLabel(getImageWithSize("/img/table.png", imageSize, imageSize));
         tableIcon.setSize(imageSize,imageSize);
         optionsPanel.add(tableIcon);
 
-        JLabel stackIcon = new JLabel(getImageWithSize("./resources/stack.png", imageSize, imageSize));
+        JLabel stackIcon = new JLabel(getImageWithSize("/img/stack.png", imageSize, imageSize));
         stackIcon.setSize(imageSize,imageSize);
         optionsPanel.add(stackIcon);
 
-        JLabel barIcon = new JLabel(getImageWithSize("./resources/bar.png", imageSize, imageSize));
+        JLabel barIcon = new JLabel(getImageWithSize("/img/bar.png", imageSize, imageSize));
         barIcon.setSize(imageSize,imageSize);
         optionsPanel.add(barIcon);
 
-        JLabel pieIcon = new JLabel(getImageWithSize("./resources/pie.png", imageSize, imageSize));
+        JLabel pieIcon = new JLabel(getImageWithSize("/img/pie.png", imageSize, imageSize));
         pieIcon.setSize(imageSize,imageSize);
         optionsPanel.add(pieIcon);
         System.out.println(pieIcon.getSize().getWidth());
@@ -434,9 +433,9 @@ public class Dialog extends JFrame {
     }
 
     private ImageIcon getImageWithSize(String fileName, int width, int height){
-        BufferedImage img = null;
+        BufferedImage img;
         try {
-            img = ImageIO.read(new File(fileName));
+            img = ImageIO.read(getClass().getResource(fileName));
             Image dimg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
             return new ImageIcon(dimg);
         } catch (IOException e) {
@@ -624,7 +623,7 @@ public class Dialog extends JFrame {
         panel.setEnabledAt(0, true);
         doState(0);
 
-        ImageIcon img = new ImageIcon("resources/icon.png");
+        ImageIcon img = new ImageIcon(getClass().getResource("/img/icon.png"));
         this.setIconImage(img.getImage());
         this.pack();
         this.setLocationRelativeTo(null);
