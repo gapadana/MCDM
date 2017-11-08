@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class Dialog extends JFrame {
+public class MainForm extends JFrame {
     private JPanel contentPane;
     private JButton exitButton;
     private JTabbedPane panel;
@@ -62,7 +62,7 @@ public class Dialog extends JFrame {
 
     private static Color DEFAULT_TEXT_COLOR = new Color(187, 187, 187);
 
-    public Dialog() {
+    public MainForm() {
 
         super("main Frame");
 
@@ -677,20 +677,6 @@ public class Dialog extends JFrame {
 //            }
 //        });
     }
-
-    private void initializeEmissions() {
-        LinkedHashMap<String, Emission> allEmissions = EmissionFactor2.getInstance().getAllEF();
-        DefaultTableModel model = new DefaultTableModel(
-                // TODO: 7/28/2017 چزا این نیست؟
-                new Object[]{"Emission", "Value", "unit"}, 0
-        );
-        for (Map.Entry<String, Emission> emission : allEmissions.entrySet()) {
-            model.addRow(new Object[]{emission.getValue().getName(), emission.getValue().getValue(), emission.getValue().getUnit()});
-        }
-        emissionsTable.setModel(model);
-
-    }
-
 
     class Renderer extends JLabel implements TreeCellRenderer {
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,

@@ -1,8 +1,5 @@
 package policyPackage;
 
-/**
- * Created by aebra on 7/21/2017.
- */
 public class Criterion
 {
     public Double value;

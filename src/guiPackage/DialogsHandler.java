@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 
 public class DialogsHandler {
 
-    private Dialog frame;
+    private MainForm frame;
 
     public static void main(String[] args) {
         DialogsHandler.i().drawMainDialog();
@@ -36,31 +36,31 @@ public class DialogsHandler {
     }
 
     void drawMainDialog() {
-        frame = new guiPackage.Dialog();
+        frame = new MainForm();
         frame.initializeDialog();
     }
 
     void drawTable() {
-        ChartDialog chartDialog = new ChartDialog(elements, frame);
-        chartDialog.setFocusable(true);
-        chartDialog.setVisible(true);
+        ChartForms chartForms = new ChartForms(elements, frame);
+        chartForms.setFocusable(true);
+        chartForms.setVisible(true);
         frame.tableB.setEnabled(false);
-        chartDialog.drawTable();
+        chartForms.drawTable();
     }
 
     void drawStackBar() {
-        ChartDialog chartDialog = new ChartDialog(elements, frame);
-        chartDialog.setFocusable(true);
-        chartDialog.setVisible(true);
+        ChartForms chartForms = new ChartForms(elements, frame);
+        chartForms.setFocusable(true);
+        chartForms.setVisible(true);
         frame.stackedB.setEnabled(false);
-        chartDialog.drawStackBar();
+        chartForms.drawStackBar();
     }
 
     void drawBar() {
-        ChartDialog chartDialog = new ChartDialog(elements, frame);
-        chartDialog.setFocusable(true);
-        chartDialog.setVisible(true);
+        ChartForms chartForms = new ChartForms(elements, frame);
+        chartForms.setFocusable(true);
+        chartForms.setVisible(true);
         frame.barB.setEnabled(false);
-        chartDialog.drawBar();
+        chartForms.drawBar();
     }
 }

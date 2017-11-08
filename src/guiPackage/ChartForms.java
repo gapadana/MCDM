@@ -16,14 +16,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.LinkedHashMap;
 
-public class ChartDialog extends JFrame {
+public class ChartForms extends JFrame {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JPanel panel;
     private int state = 0;
     private LinkedHashMap<String, Element> elements;
-    private Dialog mainFrame;
+    private MainForm mainFrame;
     private Color resourceColor = new Color(38, 193, 212);
     private Color eqpColor = new Color(255, 186, 28);
     private Color deliveryColor = new Color(231, 56, 32);
@@ -31,7 +31,7 @@ public class ChartDialog extends JFrame {
     private int screenHeigth = 0;
     ChartPanel chartPanel = null;
 
-    public ChartDialog(LinkedHashMap<String, Element> elements, Dialog mainFrame) {
+    public ChartForms(LinkedHashMap<String, Element> elements, MainForm mainFrame) {
 
         setContentPane(contentPane);
         this.elements = elements;
