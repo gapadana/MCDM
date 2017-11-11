@@ -27,7 +27,7 @@ public class Element {
 
     public void calcAllCFs() {
         for (String alternativeKey: alternatives.keySet()) {
-            alternatives.get(alternativeKey).calculateCF();
+            alternatives.get(alternativeKey).calculateCF(elementName);
         }
     }
 

@@ -63,10 +63,10 @@ public class Alternative {
         criteria.put(code, new Criterion(code, name, value));
     }
 
-    public void calculateCF() {
+    public void calculateCF(String elementName) {
 
         double buildingCoEfficient = 0;
-        if(alternativeName.toLowerCase().contains("roof") || alternativeName.toLowerCase().contains("structure")) {
+        if(elementName.toLowerCase().contains("roof") || elementName.toLowerCase().contains("structure")) {
             buildingCoEfficient = BillOfQuantities.i().getLandArea()
                     * BillOfQuantities.i().getOccupiedArea() / 100
                     * (BillOfQuantities.i().getStoriesAG() + BillOfQuantities.i().getStoriesUG());
@@ -80,12 +80,15 @@ public class Alternative {
             double materialQuantity = material.getAvg() * buildingCoEfficient;
             resourcesCF.put(material.getCode(), materialQuantity
                     * EmissionFactorHandler.i().getEf(material.getCode()).getAvg());
+//            System.out.printf("%s-%s-%s-> materialQuantity: %s, zirbana: %s, EF: %s%n", elementName, getAlternativeName(), material.getCode(), materialQuantity, buildingCoEfficient, EmissionFactorHandler.i().getEf(material.getCode()).getAvg());
             Supplier selectedSupplier = SupplierHandler.i().getSelectedSupplier(material.getCode());
             if(selectedSupplier != null) {
+                double CFRES = materialQuantity / selectedSupplier.getCapacity()
+                        * selectedSupplier.getDistance() / Constants.AVERAGE_SPEED
+                        * selectedSupplier.getAve();
                 deliveryCF.put(material.getCode(),
-                        materialQuantity / selectedSupplier.getCapacity()
-                                * selectedSupplier.getDistance() / Constants.AVERAGE_SPEED
-                                * selectedSupplier.getAve());
+                        CFRES);
+//                System.out.printf("%s-%s-%s-> materialQuantity: %s, truckN: %s, time: %s, ave: %s, CF: %s%n", elementName, getAlternativeName(), material.getCode(), materialQuantity, selectedSupplier.getCapacity(), selectedSupplier.getDistance() / Constants.AVERAGE_SPEED, selectedSupplier.getAve(), CFRES);
             }else{
                 deliveryCF.put(material.getCode(),
                         materialQuantity / 100
@@ -96,7 +99,7 @@ public class Alternative {
 
         for (Equipment eqp : equipments.values()) {
             equipmentCF.put(eqp.getCode(), eqp.getAvg() * buildingCoEfficient
-                    * EmissionFactorHandler.i().getEf(eqp.getCode()).getAvg());
+                    * EmissionFactorHandler.i().getEf(eqp.getCode()).getAvg() / 1000);
         }
 
         double cf = 0;
