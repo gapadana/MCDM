@@ -47,8 +47,6 @@ public class Element {
 
     public void calcIndex() {
         for (Alternative alternative: alternatives.values()) {
-            if(alternative.getAlternativeName().equalsIgnoreCase("C5"))
-                System.out.println("here" );
             double index = 0;
             for (Criterion criterion:alternative.criteria.values()) {
                 index += criterion.value/maxCriteria.get(criterion.resourceCode) * Weights.getInstance().getW(criterion.resourceCode);

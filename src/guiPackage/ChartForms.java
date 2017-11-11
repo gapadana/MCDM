@@ -292,8 +292,6 @@ public class ChartForms extends JFrame {
 //            renderer.setSeriesPaint(j * 3 + 1, p2);
 //            renderer.setSeriesPaint(j * 3 + 2, p3);
 //        }
-        System.out.println("column count" + dataset.getColumnCount());
-        System.out.println("row count" + dataset.getRowCount());
 
         ChartPanel chartPanel = new ChartPanel(chart);
         plot.setFixedLegendItems(createLegendItems());

@@ -359,8 +359,6 @@ public class MainForm extends JFrame {
 
         optionsPanel.setLayout(new BorderLayout());
         double width = optionsPanel.getSize().getWidth() - 80;
-        System.out.println(width);
-        System.out.println(getSize().getHeight());
         int imageSize = (int)(width / 4);
         widthSize = imageSize;
 
@@ -386,7 +384,6 @@ public class MainForm extends JFrame {
         JLabel pieIcon = new JLabel(getImageWithSize("/img/pie.png", imageSize, imageSize));
         pieIcon.setSize(imageSize,imageSize);
         optionsPanel.add(pieIcon);
-        System.out.println(pieIcon.getSize().getWidth());
 
         tableB = getButton("see result");
         stackedB = getButton("see result");

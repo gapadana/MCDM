@@ -32,7 +32,6 @@ public class ExcelImporter {
             FileInputStream excelFile = new FileInputStream(new File(address));
             Workbook workbook = new XSSFWorkbook(excelFile);
             int numberOfSheets = workbook.getNumberOfSheets();
-            System.out.println("numberOfSheets = " + numberOfSheets);
 
             getCriteria(elements, workbook);
             getSuppliers(workbook);
@@ -75,11 +74,7 @@ public class ExcelImporter {
             int x = 0;
             while (cellIterator.hasNext()) {
                 x++;
-                if(x==1){
-                    System.out.println("boz");
-                }
                 Cell currentCell = cellIterator.next();
-                System.out.print(currentCell.getCellTypeEnum());
                 CellRangeAddress mergedRegionForCell = getMergedRegionForCell(currentCell);
                 if (mergedRegionForCell != null) {
                     int firstColumn = mergedRegionForCell.getFirstColumn();
@@ -88,7 +83,6 @@ public class ExcelImporter {
                 }
                 if (currentCell.getCellTypeEnum() == CellType.STRING) {
                     String cellValue = currentCell.getStringCellValue().trim();
-                    System.out.print("[" + cellValue + "]\t");
                     switch (cellValue.toLowerCase()) {
                         case "equipment and tools (eqp)":
                             break;
@@ -144,11 +138,9 @@ public class ExcelImporter {
                     }
                 } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
                     double cellValue = currentCell.getNumericCellValue();
-                    System.out.print(cellValue + "\t");
                     if (powerRow) {
                         powers.put(x, cellValue);
                     } else if (efRow && ef != null) {
-                        System.out.println(x + " cellValue-> " + types.get(x));
                         setEmissionFactor(cellValue, types.get(x), ef, resourceCodes.get(x));
                     } else if (alternativeName != null) {
                         Element element = elements.get(elementName);
@@ -179,15 +171,10 @@ public class ExcelImporter {
                     }
                 }
             }
-            System.out.println();
         }
     }
 
     private static void setEmissionFactor(double cellValue, String type, EmissionFactor ef, String code) {
-        System.out.println("cellValue = " + cellValue);
-        System.out.println("type = " + type);
-        System.out.println("ef = " + ef);
-        System.out.println("code = " + code);
         switch (type.toLowerCase()) {
             case "ave.":
                 ef.setAvg(cellValue);
@@ -229,7 +216,6 @@ public class ExcelImporter {
                     currentCell = dataTypeSheet.getRow(firstRow).getCell(firstColumn);
                 }
                 if (currentCell.getCellTypeEnum() == CellType.STRING) {
-                    System.out.print(currentCell.getStringCellValue() + "\t");
                     if (y == 1) {
                         efUnit = currentCell.getStringCellValue();
                     } else if (y == 2) {
@@ -259,7 +245,6 @@ public class ExcelImporter {
                     }
                 } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
                     double cellValue = currentCell.getNumericCellValue();
-                    System.out.print(cellValue + "\t");
                     if (supplier == null)
                         break;
                     switch (titles.get(x).toLowerCase()) {
@@ -383,7 +368,6 @@ public class ExcelImporter {
                     }
                 } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
                     double cellValue = currentCell.getNumericCellValue();
-                    System.out.print(cellValue + "\t");
                     if (efRow && ef != null) {
                         setEmissionFactor(cellValue, types.get(x), ef, resourceCodes.get(x));
                     }else if (alternativeName != null) {
@@ -416,9 +400,7 @@ public class ExcelImporter {
                     }
                 }
             }
-            System.out.println();
         }
-        System.out.println("boz");
     }
 
     private static void getCriteria(LinkedHashMap<String, Element> elements, Workbook workbook) {
@@ -452,7 +434,6 @@ public class ExcelImporter {
                 //getCellTypeEnum shown as deprecated for version 3.15
                 //getCellTypeEnum ill be renamed to getCellType starting from version 4.0
                 if (currentCell.getCellTypeEnum() == CellType.STRING) {
-                    System.out.print(currentCell.getStringCellValue() + "\t");
                     if (y == 1) {
                         //ignore title
                     } else if (y == 2) {
@@ -477,7 +458,6 @@ public class ExcelImporter {
                         tempAlternative = new Alternative(currentCell.getStringCellValue());
                     }
                 } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-                    System.out.print(currentCell.getNumericCellValue() + "\t");
                     double cellValue = currentCell.getNumericCellValue();
                     if (criteria.containsKey(x))
                         if(tempElement != null){
@@ -486,11 +466,8 @@ public class ExcelImporter {
                                 tempElement.addAlternative(tempAlternative.getAlternativeName(), tempAlternative);
                             }
                         }
-                } else {
-                    System.out.print(x + "\t");
                 }
             }
-            System.out.println();
         }
     }
 
