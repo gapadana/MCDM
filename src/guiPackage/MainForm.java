@@ -12,8 +12,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileSystemView;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
+import javax.swing.table.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
@@ -21,9 +20,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class MainForm extends JFrame {
     private JPanel contentPane;
@@ -577,27 +574,137 @@ public class MainForm extends JFrame {
     }
 
     private void initializeCriteria() {
-        JTree tree;
-        DefaultMutableTreeNode criteriaNode = new DefaultMutableTreeNode("Criteria");
+
+        HashMap<String, String> criteriaCodeToNameMap = new HashMap<>();
+        HashMap<String, Double> criteriaCodeToMaxMap = new HashMap<>();
+        HashMap<String, Double> criteriaCodeToMinMap = new HashMap<>();
+        LinkedList<String> allAlternatives = new LinkedList<>();
+        LinkedHashMap<String, LinkedHashMap<String, Double>> criteria = new LinkedHashMap<>();
+
+        DefaultTableModel dm = new DefaultTableModel();
         for (Element element : elements.values()) {
-            DefaultMutableTreeNode tempElement = new DefaultMutableTreeNode(element.elementName);
-            criteriaNode.add(tempElement);
             for (Alternative alternative : element.alternatives.values()) {
-                DefaultMutableTreeNode tempAlternative = new DefaultMutableTreeNode(alternative.getAlternativeName());
-                tempElement.add(tempAlternative);
+                allAlternatives.add(alternative.getAlternativeName());
                 for (Criterion criterion : alternative.criteria.values()) {
-                    tempAlternative.add(new DefaultMutableTreeNode(
-                            criterion.resourceCode + "(" + criterion.name + ")" + ": " + criterion.value));
-                    allCriteria.put(criterion.resourceCode, criterion.name);
+                    LinkedHashMap<String, Double> alternativeCriteriaMap = new LinkedHashMap<>();
+                    if(criteria.containsKey(criterion.resourceCode)) {
+                        alternativeCriteriaMap = criteria.get(criterion.resourceCode);
+                        if(criteriaCodeToMaxMap.get(criterion.resourceCode) < criterion.value)
+                            criteriaCodeToMaxMap.put(criterion.resourceCode, criterion.value);
+                        if(criteriaCodeToMinMap.get(criterion.resourceCode) > criterion.value)
+                            criteriaCodeToMinMap.put(criterion.resourceCode, criterion.value);
+                    }
+                    else{
+                        criteria.put(criterion.resourceCode, alternativeCriteriaMap);
+                        criteriaCodeToNameMap.put(criterion.resourceCode, criterion.name);
+                        criteriaCodeToMaxMap.put(criterion.resourceCode, criterion.value);
+                        criteriaCodeToMinMap.put(criterion.resourceCode, criterion.value);
+                    }
+                    alternativeCriteriaMap.put(alternative.getAlternativeName(), criterion.value);
                 }
             }
         }
-        tree = new JTree(criteriaNode);
+
+        Object[][] objects = new Object[criteriaCodeToMaxMap.keySet().size()][allAlternatives.size() + 1];
+        final int[][] objectsColor = new int[criteriaCodeToMaxMap.keySet().size()][allAlternatives.size() + 1];
+        int row = 0;
+        for (String key : criteria.keySet()) {
+            LinkedHashMap<String, Double> alternatives = criteria.get(key);
+            objects[row][0] = criteriaCodeToNameMap.get(key);
+            objectsColor[row][0] = -1;
+            int column = 1;
+            for (String oneOfAlternatives: allAlternatives) {
+                if(alternatives.containsKey(oneOfAlternatives)) {
+                    double value = alternatives.get(oneOfAlternatives);
+                    objects[row][column] = alternatives.get(oneOfAlternatives);
+                    objectsColor[row][column] = (int)((value - criteriaCodeToMinMap.get(key)) * 510 / (criteriaCodeToMaxMap.get(key) - criteriaCodeToMinMap.get(key)));
+                }
+                column ++;
+            }
+            row++;
+        }
+
+        Object[] header = new Object[allAlternatives.size() + 1];
+        header[0] = "Criteria";
+        int column = 1;
+        for (String alternativeName : allAlternatives) {
+            header[column++] = alternativeName;
+        }
+
+        dm.setDataVector(objects, header);
+
+        JTable table = new JTable( dm ){
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+                Component comp = super.prepareRenderer(renderer, row, col);
+                Object value = getModel().getValueAt(row, col);
+                if(value == null)
+                    comp.setBackground(Color.WHITE);
+                else if(objectsColor[row][col] == -1)
+                    comp.setBackground(Color.WHITE);
+                else if(objectsColor[row][col] <= 255)
+                    comp.setBackground(new Color(255, objectsColor[row][col], 0, 100));
+                else
+                    comp.setBackground(new Color(255 - (objectsColor[row][col] - 255 ), 255, 0, 100));
+                if (getSelectedRow() == row) {
+                    Color color = comp.getBackground();
+                    if(color == Color.white)
+                        comp.setBackground(Color.lightGray);
+                    else
+                        comp.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 200));
+                }else{
+                    Color color = comp.getBackground();
+                    if(color == Color.lightGray)
+                        comp.setBackground(Color.white);
+                    else
+                        comp.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
+                }
+                return comp;
+            }
+        };
+        resizeColumnWidth(table);
         criteriaPanel.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane();
-        tree.setCellRenderer(new Renderer());
-        scrollPane.getViewport().add(tree);
+        scrollPane.getViewport().add(table);
         criteriaPanel.add(scrollPane);
+
+//
+//    JTree tree;
+//        DefaultMutableTreeNode criteriaNode = new DefaultMutableTreeNode("Criteria");
+//        for (Element element : elements.values()) {
+//            DefaultMutableTreeNode tempElement = new DefaultMutableTreeNode(element.elementName);
+//            criteriaNode.add(tempElement);
+//            for (Alternative alternative : element.alternatives.values()) {
+//                DefaultMutableTreeNode tempAlternative = new DefaultMutableTreeNode(alternative.getAlternativeName());
+//                tempElement.add(tempAlternative);
+//                for (Criterion criterion : alternative.criteria.values()) {
+//                    tempAlternative.add(new DefaultMutableTreeNode(
+//                            criterion.resourceCode + "(" + criterion.name + ")" + ": " + criterion.value));
+//                    allCriteria.put(criterion.resourceCode, criterion.name);
+//                }
+//            }
+//        }
+//        tree = new JTree(criteriaNode);
+//        criteriaPanel.setLayout(new BorderLayout());
+//        JScrollPane scrollPane = new JScrollPane();
+//        tree.setCellRenderer(new Renderer());
+//        scrollPane.getViewport().add(tree);
+//        criteriaPanel.add(scrollPane);
+    }
+
+    private void resizeColumnWidth(JTable table) {
+        final TableColumnModel columnModel = table.getColumnModel();
+        for (int column = 0; column < table.getColumnCount(); column++) {
+            int width = 15; // Min width
+            for (int row = 0; row < table.getRowCount(); row++) {
+                TableCellRenderer renderer = table.getCellRenderer(row, column);
+                Component comp = table.prepareRenderer(renderer, row, column);
+                width = Math.max(comp.getPreferredSize().width +1 , width);
+            }
+            if(width > 300)
+                width=300;
+            columnModel.getColumn(column).setPreferredWidth(width);
+        }
     }
 
     private void initializeExcel() {
