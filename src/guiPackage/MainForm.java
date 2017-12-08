@@ -575,14 +575,27 @@ public class MainForm extends JFrame {
 
     private void initializeCriteria() {
 
-        HashMap<String, String> criteriaCodeToNameMap = new HashMap<>();
-        HashMap<String, Double> criteriaCodeToMaxMap = new HashMap<>();
-        HashMap<String, Double> criteriaCodeToMinMap = new HashMap<>();
-        LinkedList<String> allAlternatives = new LinkedList<>();
-        LinkedHashMap<String, LinkedHashMap<String, Double>> criteria = new LinkedHashMap<>();
+        criteriaPanel.setLayout(new SpringLayout());
 
-        DefaultTableModel dm = new DefaultTableModel();
+//        GridBagConstraints c = new GridBagConstraints();
+//        c.gridx = 0;//set the x location of the grid for the next component
+//        c.gridy = 0;//set the y location of the grid for the next component
+//        c.anchor=GridBagConstraints.WEST;
+
         for (Element element : elements.values()) {
+
+            JLabel title = new JLabel(element.elementName + " :");
+            title.setOpaque(true);
+            title.setBackground(Color.white);
+            title.setFont(new Font(title.getFont().getName(), Font.BOLD, 18));
+            criteriaPanel.add(title);
+            HashMap<String, String> criteriaCodeToNameMap = new HashMap<>();
+            HashMap<String, Double> criteriaCodeToMaxMap = new HashMap<>();
+            HashMap<String, Double> criteriaCodeToMinMap = new HashMap<>();
+            LinkedList<String> allAlternatives = new LinkedList<>();
+            LinkedHashMap<String, LinkedHashMap<String, Double>> criteria = new LinkedHashMap<>();
+            DefaultTableModel dm = new DefaultTableModel();
+
             for (Alternative alternative : element.alternatives.values()) {
                 allAlternatives.add(alternative.getAlternativeName());
                 for (Criterion criterion : alternative.criteria.values()) {
@@ -603,70 +616,79 @@ public class MainForm extends JFrame {
                     alternativeCriteriaMap.put(alternative.getAlternativeName(), criterion.value);
                 }
             }
-        }
 
-        Object[][] objects = new Object[criteriaCodeToMaxMap.keySet().size()][allAlternatives.size() + 1];
-        final int[][] objectsColor = new int[criteriaCodeToMaxMap.keySet().size()][allAlternatives.size() + 1];
-        int row = 0;
-        for (String key : criteria.keySet()) {
-            LinkedHashMap<String, Double> alternatives = criteria.get(key);
-            objects[row][0] = criteriaCodeToNameMap.get(key);
-            objectsColor[row][0] = -1;
+            Object[][] objects = new Object[criteriaCodeToMaxMap.keySet().size()][allAlternatives.size() + 1];
+            final int[][] objectsColor = new int[criteriaCodeToMaxMap.keySet().size()][allAlternatives.size() + 1];
+            int row = 0;
+            for (String key : criteria.keySet()) {
+                LinkedHashMap<String, Double> alternatives = criteria.get(key);
+                objects[row][0] = criteriaCodeToNameMap.get(key);
+                objectsColor[row][0] = -1;
+                int column = 1;
+                for (String oneOfAlternatives: allAlternatives) {
+                    if(alternatives.containsKey(oneOfAlternatives)) {
+                        double value = alternatives.get(oneOfAlternatives);
+                        objects[row][column] = alternatives.get(oneOfAlternatives);
+                        objectsColor[row][column] = (int)((value - criteriaCodeToMinMap.get(key)) * 510 / (criteriaCodeToMaxMap.get(key) - criteriaCodeToMinMap.get(key)));
+                    }
+                    column ++;
+                }
+                row++;
+            }
+
+            Object[] header = new Object[allAlternatives.size() + 1];
+            header[0] = "Criteria";
             int column = 1;
-            for (String oneOfAlternatives: allAlternatives) {
-                if(alternatives.containsKey(oneOfAlternatives)) {
-                    double value = alternatives.get(oneOfAlternatives);
-                    objects[row][column] = alternatives.get(oneOfAlternatives);
-                    objectsColor[row][column] = (int)((value - criteriaCodeToMinMap.get(key)) * 510 / (criteriaCodeToMaxMap.get(key) - criteriaCodeToMinMap.get(key)));
-                }
-                column ++;
+            for (String alternativeName : allAlternatives) {
+                header[column++] = alternativeName;
             }
-            row++;
-        }
 
-        Object[] header = new Object[allAlternatives.size() + 1];
-        header[0] = "Criteria";
-        int column = 1;
-        for (String alternativeName : allAlternatives) {
-            header[column++] = alternativeName;
-        }
+            dm.setDataVector(objects, header);
 
-        dm.setDataVector(objects, header);
-
-        JTable table = new JTable( dm ){
-            @Override
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-                Component comp = super.prepareRenderer(renderer, row, col);
-                Object value = getModel().getValueAt(row, col);
-                if(value == null)
-                    comp.setBackground(Color.WHITE);
-                else if(objectsColor[row][col] == -1)
-                    comp.setBackground(Color.WHITE);
-                else if(objectsColor[row][col] <= 255)
-                    comp.setBackground(new Color(255, objectsColor[row][col], 0, 100));
-                else
-                    comp.setBackground(new Color(255 - (objectsColor[row][col] - 255 ), 255, 0, 100));
-                if (getSelectedRow() == row) {
-                    Color color = comp.getBackground();
-                    if(color == Color.white)
-                        comp.setBackground(Color.lightGray);
+            JTable table = new JTable( dm ){
+                @Override
+                public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+                    Component comp = super.prepareRenderer(renderer, row, col);
+                    Object value = getModel().getValueAt(row, col);
+                    if(value == null)
+                        comp.setBackground(Color.WHITE);
+                    else if(objectsColor[row][col] == -1)
+                        comp.setBackground(Color.WHITE);
+                    else if(objectsColor[row][col] <= 255)
+                        comp.setBackground(new Color(255, objectsColor[row][col], 0, 100));
                     else
-                        comp.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 200));
-                }else{
-                    Color color = comp.getBackground();
-                    if(color == Color.lightGray)
-                        comp.setBackground(Color.white);
-                    else
-                        comp.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
+                        comp.setBackground(new Color(255 - (objectsColor[row][col] - 255 ), 255, 0, 100));
+                    if (getSelectedRow() == row) {
+                        Color color = comp.getBackground();
+                        if(color == Color.white)
+                            comp.setBackground(Color.lightGray);
+                        else
+                            comp.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 200));
+                    }else{
+                        Color color = comp.getBackground();
+                        if(color == Color.lightGray)
+                            comp.setBackground(Color.white);
+                        else
+                            comp.setBackground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100));
+                    }
+                    return comp;
                 }
-                return comp;
-            }
-        };
-        resizeColumnWidth(table);
-        criteriaPanel.setLayout(new BorderLayout());
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.getViewport().add(table);
-        criteriaPanel.add(scrollPane);
+            };
+            resizeColumnWidth(table);
+            JScrollPane scrollPane = new JScrollPane();
+            scrollPane.getViewport().add(table);
+            criteriaPanel.add(scrollPane);
+
+//            c.gridy ++;
+        }
+        SpringUtilities.makeCompactGrid(criteriaPanel, //parent
+                elements.size() * 2, 1,
+                0, 0,  //initX, initY
+                0, 0); //xPad, yPad
+
+
+
+
 
 //
 //    JTree tree;
