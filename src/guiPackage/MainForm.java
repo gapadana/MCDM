@@ -206,10 +206,10 @@ public class MainForm extends JFrame {
 
     private void doState(int selectedIndex) {
         switch (selectedIndex) {
-            case 0:
+            case 1:
                 this.initializeBOQ();
                 break;
-            case 1:
+            case 0:
                 this.initializeExcel();
                 break;
             case 2:
@@ -230,9 +230,9 @@ public class MainForm extends JFrame {
     private boolean check(int state) {
 
         switch (state) {
-            case 0:
-                return checkBOQ();
             case 1:
+                return checkBOQ();
+            case 0:
                 return checkExcel();
             case 3:
                 return checkWeights();
