@@ -12,12 +12,10 @@ public class Element {
 
     public String elementName;
     public LinkedHashMap<String, Alternative> alternatives;
-    private LinkedHashMap<String, Double> maxCriteria;
 
     public Element(String elementName) {
         this.elementName = elementName;
-        alternatives = new LinkedHashMap<String, Alternative>();
-        maxCriteria = new LinkedHashMap<String, Double>();
+        alternatives = new LinkedHashMap<>();
     }
 
     public void addAlternative(String alternativeName, Alternative alternative) {
@@ -35,11 +33,11 @@ public class Element {
         for (String alternativeKey: alternatives.keySet()) {
             LinkedHashMap<String, Criterion> criteria = alternatives.get(alternativeKey).criteria;
             for (String key: criteria.keySet()) {
-                if(maxCriteria.containsKey(key)){
-                    if(maxCriteria.get(key) < criteria.get(key).value)
-                        maxCriteria.put(key, criteria.get(key).value);
+                if(alternatives.get(alternativeKey).maxCriteria.containsKey(key)){
+                    if(alternatives.get(alternativeKey).maxCriteria.get(key) < criteria.get(key).value)
+                        alternatives.get(alternativeKey).maxCriteria.put(key, criteria.get(key).value);
                 }else{
-                    maxCriteria.put(key, criteria.get(key).value);
+                    alternatives.get(alternativeKey).maxCriteria.put(key, criteria.get(key).value);
                 }
             }
         }
@@ -49,7 +47,7 @@ public class Element {
         for (Alternative alternative: alternatives.values()) {
             double index = 0;
             for (Criterion criterion:alternative.criteria.values()) {
-                index += criterion.value/maxCriteria.get(criterion.resourceCode) * Weights.getInstance().getW(criterion.resourceCode);
+                index += criterion.value/alternative.maxCriteria.get(criterion.resourceCode) * Weights.getInstance().getW(criterion.resourceCode);
             }
             alternative.setIndex(index);
         }
