@@ -600,6 +600,8 @@ public class MainForm extends JFrame {
                 allAlternatives.add(alternative.getAlternativeName());
                 for (Criterion criterion : alternative.criteria.values()) {
                     LinkedHashMap<String, Double> alternativeCriteriaMap = new LinkedHashMap<>();
+                    if(!allCriteria.containsKey(criterion.resourceCode))
+                        allCriteria.put(criterion.resourceCode, criterion.name);
                     if(criteria.containsKey(criterion.resourceCode)) {
                         alternativeCriteriaMap = criteria.get(criterion.resourceCode);
                         if(criteriaCodeToMaxMap.get(criterion.resourceCode) < criterion.value)
