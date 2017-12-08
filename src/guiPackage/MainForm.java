@@ -46,6 +46,7 @@ public class MainForm extends JFrame {
     private JLabel fileAddress;
     private JPanel weightPanel;
     private JPanel suppliersPanel;
+    private JPanel importerPanel;
     JButton stackedB;
     JButton barB;
     JButton pieB;
@@ -780,7 +781,32 @@ public class MainForm extends JFrame {
     }
 
     private void initializeExcel() {
+        SpringLayout layout = new SpringLayout();
+        importerPanel.setLayout(layout);
+
+        JLabel title = new JLabel("Import your excel file here:");
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 18));
+        importerPanel.add(title);
+        JLabel excelImage = new JLabel(getImageWithSize("/img/excel.png", 720, 340));
+        importerPanel.add(excelImage);
+        importerPanel.add(importExcelFileButton);
         fileAddress.setText("RESOURCE_Ali.xlsx");
+        importerPanel.add(fileAddress);
+
+        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, title, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, excelImage, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, importExcelFileButton, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, fileAddress, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+
+        layout.putConstraint(SpringLayout.NORTH, title, 20, SpringLayout.NORTH, importerPanel);
+        layout.putConstraint(SpringLayout.NORTH, excelImage, -50, SpringLayout.SOUTH, title);
+        layout.putConstraint(SpringLayout.NORTH, importExcelFileButton, -50, SpringLayout.SOUTH, excelImage);
+        layout.putConstraint(SpringLayout.NORTH, fileAddress, 10, SpringLayout.SOUTH, importExcelFileButton);
+        this.pack();
+//        SpringUtilities.makeCompactGrid(importerPanel, //parent
+//                4, 1,
+//                0, 0,  //initX, initY
+//                0, 0); //xPad, yPad
     }
 
     private void initializeBOQ() {
