@@ -511,16 +511,25 @@ public class MainForm extends JFrame {
     private void initializeWeights() {
         SpringLayout springLayout = new SpringLayout();
         weightPanel.setLayout(springLayout);
+        JPanel jSlidersPanel = new JPanel(new SpringLayout());
+
+        JLabel title = new JLabel("Choose weight for each criteria:");
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 18));
+//        title.setOpaque(true);
+//        title.setBackground(Color.white);
+        weightPanel.add(title);
+
+
         for (String criteria:allCriteria.keySet()) {
             JLabel tempLabel = new JLabel(allCriteria.get(criteria));
             JSlider tempSlider = new JSlider();
             tempSlider.setMinimum(0);
             tempSlider.setMaximum(9);
             tempSlider.setValue(5);
-            final JLabel statusLabel = new JLabel("Value : 5", JLabel.CENTER);
+            final JLabel statusLabel = new JLabel("medium Importance", JLabel.CENTER);
             tempSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
-                    statusLabel.setText("Value : " + ((JSlider)e.getSource()).getValue());
+                    statusLabel.setText(getImportance(((JSlider)e.getSource()).getValue()));
                 }
             });
 //            JComboBox<String> tempCombo = new JComboBox<>();
@@ -532,10 +541,10 @@ public class MainForm extends JFrame {
             tempLabel.setLabelFor(tempSlider);
             JCheckBox checkBox = new JCheckBox("minimized", false);
 //            springLayout.putConstraint(SpringLayout.WEST, tempLabel,5, SpringLayout.EAST, tempCombo);
-            weightPanel.add(tempLabel);
-            weightPanel.add(tempSlider);
-            weightPanel.add(statusLabel);
-            weightPanel.add(checkBox);
+            jSlidersPanel.add(tempLabel);
+            jSlidersPanel.add(tempSlider);
+            jSlidersPanel.add(statusLabel);
+            jSlidersPanel.add(checkBox);
             allSliders.put(criteria,tempSlider);
             allBoxes.put(criteria,checkBox);
         }
@@ -544,10 +553,10 @@ public class MainForm extends JFrame {
         tempSlider.setMinimum(0);
         tempSlider.setMaximum(9);
         tempSlider.setValue(5);
-        final JLabel statusLabel = new JLabel("Value : 5", JLabel.CENTER);
+        final JLabel statusLabel = new JLabel("medium Importance", JLabel.CENTER);
         tempSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                statusLabel.setText("Value : " + ((JSlider)e.getSource()).getValue());
+                statusLabel.setText(getImportance(((JSlider)e.getSource()).getValue()));
             }
         });
 //        JComboBox<String> tempCombo = new JComboBox<>();
@@ -559,18 +568,57 @@ public class MainForm extends JFrame {
         tempLabel.setLabelFor(tempSlider);
         JCheckBox checkBox = new JCheckBox("minimized", false);
 //        springLayout.putConstraint(SpringLayout.WEST, tempLabel,5, SpringLayout.EAST, tempCombo);
-        weightPanel.add(tempLabel);
-        weightPanel.add(tempSlider);
-        weightPanel.add(statusLabel);
-        weightPanel.add(checkBox);
+        jSlidersPanel.add(tempLabel);
+        jSlidersPanel.add(tempSlider);
+        jSlidersPanel.add(statusLabel);
+        jSlidersPanel.add(checkBox);
         allSliders.put("CF",tempSlider);
         allBoxes.put("CF",checkBox);
 
-        SpringUtilities.makeCompactGrid(weightPanel,
+        SpringUtilities.makeCompactGrid(jSlidersPanel,
                 allSliders.size(), 4, //rows, cols
                 6, 6,        //initX, initY
                 6, 6);       //xPad, yPad
+        weightPanel.add(jSlidersPanel);
 
+        JTextArea description = new JTextArea("Description:\n" +
+                "\t1. If you want that your criterion not include in calculating index just set the slider on not include.\n" +
+                "\t2. Set the importance of criterion by moving slider. (very low, low, medium, high, very high)\n" +
+                "\t3. If the criterion must minimized like cost or etc. check minimized on the right side");
+        description.setFont(new Font(description.getFont().getName(), Font.ITALIC, 16));
+        description.setOpaque(false);
+        description.setFocusable(false);
+        weightPanel.add(description);
+
+        SpringUtilities.makeCompactGrid(weightPanel,
+                3, 1, //rows, cols
+                6, 6,        //initX, initY
+                6, 6);
+
+    }
+
+    private String getImportance(int value) {
+        switch(value){
+            case 0:
+                return "not Include";
+            case 1:
+            case 2:
+                return "very low Importance";
+            case 3:
+            case 4:
+                return "low Importance";
+            case 5:
+                return "medium Importance";
+            case 6:
+            case 7:
+                return "high Importance";
+            case 8:
+            case 9:
+                return "very high Importance";
+            default:
+                return "medium Importance";
+
+        }
     }
 
     private void initializeCriteria() {
