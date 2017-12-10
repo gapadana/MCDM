@@ -21,7 +21,7 @@ public class Alternative {
     public LinkedHashMap<String, Double> resourcesCF = new LinkedHashMap<>();
     private LinkedHashMap<String, Double> deliveryCF = new LinkedHashMap<>();
     public LinkedHashMap<String, Double> equipmentCF = new LinkedHashMap<>();
-    public LinkedHashMap<String, Double> maxCriteria;
+
 //    private double cf2 = 0;
 //    private double cf3 = 0;
     private double index;
@@ -31,7 +31,7 @@ public class Alternative {
         equipments = new LinkedHashMap<>();
         materials = new LinkedHashMap<>();
         criteria = new LinkedHashMap<>();
-        maxCriteria = new LinkedHashMap<>();
+
     }
 
     public void addCriteria(String criteriaName, Criterion criterion){

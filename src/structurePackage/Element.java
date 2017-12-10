@@ -12,6 +12,7 @@ public class Element {
 
     public String elementName;
     public LinkedHashMap<String, Alternative> alternatives;
+    public LinkedHashMap<String, Double> maxCriteria;
 
     public Element(String elementName) {
         this.elementName = elementName;
@@ -30,14 +31,15 @@ public class Element {
     }
 
     public void calcMaxes() {
+        maxCriteria = new LinkedHashMap<>();
         for (String alternativeKey: alternatives.keySet()) {
             LinkedHashMap<String, Criterion> criteria = alternatives.get(alternativeKey).criteria;
             for (String key: criteria.keySet()) {
-                if(alternatives.get(alternativeKey).maxCriteria.containsKey(key)){
-                    if(alternatives.get(alternativeKey).maxCriteria.get(key) < criteria.get(key).value)
-                        alternatives.get(alternativeKey).maxCriteria.put(key, criteria.get(key).value);
+                if(maxCriteria.containsKey(key)){
+                    if(maxCriteria.get(key) < criteria.get(key).value)
+                        maxCriteria.put(key, criteria.get(key).value);
                 }else{
-                    alternatives.get(alternativeKey).maxCriteria.put(key, criteria.get(key).value);
+                    maxCriteria.put(key, criteria.get(key).value);
                 }
             }
         }
@@ -47,7 +49,7 @@ public class Element {
         for (Alternative alternative: alternatives.values()) {
             double index = 0;
             for (Criterion criterion:alternative.criteria.values()) {
-                index += criterion.value/alternative.maxCriteria.get(criterion.resourceCode) * Weights.getInstance().getW(criterion.resourceCode);
+                index += criterion.value/maxCriteria.get(criterion.resourceCode) * Weights.getInstance().getW(criterion.resourceCode);
             }
             alternative.setIndex(index);
         }
