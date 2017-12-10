@@ -27,6 +27,10 @@ public class Weights {
         return weights.get(key);
     }
 
+    public boolean hasKey(String key){
+        return weights.containsKey(key);
+    }
+
     public void addWeight(String criteria, int selectedItem, boolean minimized) {
         double value = selectedItem;
         weights.put(criteria, value * (minimized ? -1 : 1));

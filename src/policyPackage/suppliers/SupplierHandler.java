@@ -45,4 +45,8 @@ public class SupplierHandler {
     public Supplier getSelectedSupplier(String mtlCode){
         return selectedSuppliers.get(mtlCode);
     }
+
+    public boolean hasKey(String materialCode) {
+        return selectedSuppliers.containsKey(materialCode);
+    }
 }

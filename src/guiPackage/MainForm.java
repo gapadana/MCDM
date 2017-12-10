@@ -13,7 +13,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,7 +23,7 @@ import java.util.*;
 
 public class MainForm extends JFrame {
     private JPanel contentPane;
-    private JButton exitButton;
+    private JButton backButton;
     private JTabbedPane panel;
     private JTable emissionsTable;
     private TableModel emissionTableModel;
@@ -58,22 +57,28 @@ public class MainForm extends JFrame {
     private LinkedHashMap<String, JCheckBox> allBoxes = new LinkedHashMap<>();
     LinkedHashMap<String, Element> elements = new LinkedHashMap<>();
 
+    boolean[] tabsInitialized;
+
+    private int selectedTab = 0;
+
     private static Color DEFAULT_TEXT_COLOR = new Color(187, 187, 187);
 
     public MainForm() {
 
         super("main Frame");
 
+        tabsInitialized = new boolean[panel.getTabCount()];
+
         setContentPane(contentPane);
-        panel.setFocusable(false);
+//        panel.setFocusable(false);
         setTextBoxesSelectAllFocused();
         setResizable(false);
 
         getRootPane().setDefaultButton(nextButton);
 
-        exitButton.addActionListener(new ActionListener() {
+        backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onExit();
+                onBack();
             }
         });
 
@@ -88,13 +93,13 @@ public class MainForm extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onExit();
+                System.exit(100);
             }
         });
 
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onExit();
+                onBack();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
@@ -113,6 +118,7 @@ public class MainForm extends JFrame {
                 }
             }
         });
+
 
     }
 
@@ -179,8 +185,23 @@ public class MainForm extends JFrame {
         );
     }
 
-    private void onExit() {
-        System.exit(100);
+    private void onBack() {
+        int selectedIndex = panel.getSelectedIndex();
+        if (check(selectedIndex)) {
+//            panel.setEnabledAt(selectedIndex, false);
+            selectedIndex--;
+            try {
+                panel.setSelectedIndex(selectedIndex);
+//                panel.setEnabledAt(selectedIndex, true);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+            selectedTab = selectedIndex;
+            doState(selectedIndex);
+        } else {
+
+        }
     }
 
     private void onNext() {
@@ -198,6 +219,7 @@ public class MainForm extends JFrame {
                 System.out.println(e.getMessage());
             }
 
+            selectedTab = selectedIndex;
             doState(selectedIndex);
         } else {
 
@@ -208,22 +230,24 @@ public class MainForm extends JFrame {
     private void doState(int selectedIndex) {
         switch (selectedIndex) {
             case 1:
-                this.initializeBOQ();
+                backButton.setEnabled(true);
+                this.initializeBOQ(1);
                 break;
             case 0:
-                this.initializeExcel();
+                backButton.setEnabled(false);
+                this.initializeExcel(0);
                 break;
             case 2:
-                this.initializeCriteria();
+                this.initializeCriteria(2);
                 break;
             case 3:
-                this.initializeWeights();
+                this.initializeWeights(3);
                 break;
             case 4:
-                this.initializeSuppliers();
+                this.initializeSuppliers(4);
                 break;
             case 5:
-                this.showAvailableOptions();
+                this.showAvailableOptions(5);
                 break;
         }
     }
@@ -261,8 +285,12 @@ public class MainForm extends JFrame {
 
     private boolean checkExcel() {
         if (fileAddress.getText().endsWith("xlsx")) {
-            if (ExcelImporter.importExcel(fileAddress.getText(), elements))
+            if (ExcelImporter.importExcel(fileAddress.getText(), elements)) {
+//                for (int i = 0; i < panel.getTabCount(); i++) {
+//                    panel.setEnabledAt(i, true);
+//                }
                 return true;
+            }
             else{
                 JOptionPane.showMessageDialog(this, "File has a problem!");
             }
@@ -273,7 +301,7 @@ public class MainForm extends JFrame {
     }
 
     private boolean checkBOQ() {
-        boolean isCorect = true;
+        boolean isCorrect = true;
         PERIMETERS:
         {
             try {
@@ -285,7 +313,7 @@ public class MainForm extends JFrame {
                 }
             } catch (NumberFormatException ignored) {
             }
-            isCorect = false;
+            isCorrect = false;
             boqL1.setForeground(Color.red);
         }
         AREA:
@@ -299,7 +327,7 @@ public class MainForm extends JFrame {
                 }
             } catch (NumberFormatException ignored) {
             }
-            isCorect = false;
+            isCorrect = false;
             boqL2.setForeground(Color.red);
         }
         STORIESUG:
@@ -313,7 +341,7 @@ public class MainForm extends JFrame {
                 }
             } catch (NumberFormatException ignored) {
             }
-            isCorect = false;
+            isCorrect = false;
             boqL3.setForeground(Color.red);
         }
         STORIESAG:
@@ -327,7 +355,7 @@ public class MainForm extends JFrame {
                 }
             } catch (NumberFormatException ignored) {
             }
-            isCorect = false;
+            isCorrect = false;
             boqL4.setForeground(Color.red);
         }
         OCCUPIEDAREA:
@@ -341,17 +369,17 @@ public class MainForm extends JFrame {
                 }
             } catch (NumberFormatException ignored) {
             }
-            isCorect = false;
+            isCorrect = false;
             boqL5.setForeground(Color.red);
         }
         BillOfQuantities.i().test();
-        if(!isCorect)
+        if(!isCorrect)
             JOptionPane.showMessageDialog(this, "correct the red fields");
-        return isCorect;
+        return isCorrect;
     }
 
 
-    private void showAvailableOptions() {
+    private void showAvailableOptions(int i) {
 
         new Aggregator(elements);
 
@@ -479,8 +507,9 @@ public class MainForm extends JFrame {
 
     }
 
-    private void initializeSuppliers() {
+    private void initializeSuppliers(int i) {
 
+        suppliersPanel.removeAll();
         SpringLayout springLayout = new SpringLayout();
         suppliersPanel.setLayout(springLayout);
         suppliersPanel.add(new JLabel("Material code:"));
@@ -499,6 +528,9 @@ public class MainForm extends JFrame {
                 suppliersPanel.add(new JLabel(materialCode));
                 suppliersPanel.add(new JLabel(name));
                 JComboBox<String> comp = new JComboBox<>(suppliersName);
+                if(SupplierHandler.i().hasKey(materialCode)){
+                    comp.setSelectedItem(SupplierHandler.i().getSelectedSupplier(materialCode).getSupplier());
+                }
                 allSupliers.put(materialCode, comp);
                 suppliersPanel.add(comp);
             }
@@ -509,7 +541,9 @@ public class MainForm extends JFrame {
                 6, 6);       //xPad, yPad
     }
 
-    private void initializeWeights() {
+    private void initializeWeights(int i) {
+        weightPanel.removeAll();
+
         SpringLayout springLayout = new SpringLayout();
         weightPanel.setLayout(springLayout);
         JPanel jSlidersPanel = new JPanel(new SpringLayout());
@@ -526,7 +560,12 @@ public class MainForm extends JFrame {
             JSlider tempSlider = new JSlider();
             tempSlider.setMinimum(0);
             tempSlider.setMaximum(9);
-            tempSlider.setValue(5);
+            int value = 5;
+            if(Weights.getInstance().hasKey(criteria)) {
+                double w = Weights.getInstance().getW(criteria);
+                value = (int) w;
+            }
+            tempSlider.setValue(Math.abs(value));
             final JLabel statusLabel = new JLabel("medium Importance", JLabel.CENTER);
             tempSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
@@ -540,7 +579,7 @@ public class MainForm extends JFrame {
 //            tempCombo.addItem("low");
 //            tempCombo.addItem("very low");
             tempLabel.setLabelFor(tempSlider);
-            JCheckBox checkBox = new JCheckBox("minimized", false);
+            JCheckBox checkBox = new JCheckBox("minimized", (value < 0));
 //            springLayout.putConstraint(SpringLayout.WEST, tempLabel,5, SpringLayout.EAST, tempCombo);
             jSlidersPanel.add(tempLabel);
             jSlidersPanel.add(tempSlider);
@@ -553,7 +592,12 @@ public class MainForm extends JFrame {
         JSlider tempSlider = new JSlider();
         tempSlider.setMinimum(0);
         tempSlider.setMaximum(9);
-        tempSlider.setValue(5);
+        int value = 5;
+        if(Weights.getInstance().hasKey("CF")) {
+            double w = Weights.getInstance().getW("CF");
+            value = (int) w;
+        }
+        tempSlider.setValue(Math.abs(value));
         final JLabel statusLabel = new JLabel("medium Importance", JLabel.CENTER);
         tempSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -567,7 +611,7 @@ public class MainForm extends JFrame {
 //        tempCombo.addItem("low");
 //        tempCombo.addItem("very low");
         tempLabel.setLabelFor(tempSlider);
-        JCheckBox checkBox = new JCheckBox("minimized", false);
+        JCheckBox checkBox = new JCheckBox("minimized", value < 0);
 //        springLayout.putConstraint(SpringLayout.WEST, tempLabel,5, SpringLayout.EAST, tempCombo);
         jSlidersPanel.add(tempLabel);
         jSlidersPanel.add(tempSlider);
@@ -596,6 +640,8 @@ public class MainForm extends JFrame {
                 6, 6,        //initX, initY
                 6, 6);
 
+        tabsInitialized[i] = true;
+
     }
 
     private String getImportance(int value) {
@@ -622,8 +668,9 @@ public class MainForm extends JFrame {
         }
     }
 
-    private void initializeCriteria() {
+    private void initializeCriteria(int i) {
 
+        criteriaPanel.removeAll();
         criteriaPanel.setLayout(new SpringLayout());
 
 //        GridBagConstraints c = new GridBagConstraints();
@@ -739,7 +786,7 @@ public class MainForm extends JFrame {
 
 
 
-
+        tabsInitialized[i] = true;
 
 //
 //    JTree tree;
@@ -780,44 +827,53 @@ public class MainForm extends JFrame {
         }
     }
 
-    private void initializeExcel() {
-        SpringLayout layout = new SpringLayout();
-        importerPanel.setLayout(layout);
+    private void initializeExcel(int i) {
 
-        JLabel title = new JLabel("Import your excel file here:");
-        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 18));
-        importerPanel.add(title);
-        JLabel excelImage = new JLabel(getImageWithSize("/img/excel.png", 720, 340));
-        importerPanel.add(excelImage);
-        importerPanel.add(importExcelFileButton);
-        fileAddress.setText("RESOURCE_Ali.xlsx");
-        importerPanel.add(fileAddress);
+        if(!tabsInitialized[i]) {
+            SpringLayout layout = new SpringLayout();
+            importerPanel.setLayout(layout);
 
-        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, title, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
-        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, excelImage, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
-        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, importExcelFileButton, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
-        layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, fileAddress, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+            JLabel title = new JLabel("Import your excel file here:");
+            title.setFont(new Font(title.getFont().getName(), Font.BOLD, 18));
+            importerPanel.add(title);
+            JLabel excelImage = new JLabel(getImageWithSize("/img/excel.png", 720, 340));
+            importerPanel.add(excelImage);
+            importerPanel.add(importExcelFileButton);
+            fileAddress.setText("RESOURCE_Ali.xlsx");
+            importerPanel.add(fileAddress);
 
-        layout.putConstraint(SpringLayout.NORTH, title, 20, SpringLayout.NORTH, importerPanel);
-        layout.putConstraint(SpringLayout.NORTH, excelImage, -50, SpringLayout.SOUTH, title);
-        layout.putConstraint(SpringLayout.NORTH, importExcelFileButton, -50, SpringLayout.SOUTH, excelImage);
-        layout.putConstraint(SpringLayout.NORTH, fileAddress, 10, SpringLayout.SOUTH, importExcelFileButton);
-        this.pack();
+            layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, title, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+            layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, excelImage, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+            layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, importExcelFileButton, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+            layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, fileAddress, 0, SpringLayout.HORIZONTAL_CENTER, importerPanel);
+
+            layout.putConstraint(SpringLayout.NORTH, title, 20, SpringLayout.NORTH, importerPanel);
+            layout.putConstraint(SpringLayout.NORTH, excelImage, -50, SpringLayout.SOUTH, title);
+            layout.putConstraint(SpringLayout.NORTH, importExcelFileButton, -50, SpringLayout.SOUTH, excelImage);
+            layout.putConstraint(SpringLayout.NORTH, fileAddress, 10, SpringLayout.SOUTH, importExcelFileButton);
+            this.pack();
+
+        }
 //        SpringUtilities.makeCompactGrid(importerPanel, //parent
 //                4, 1,
 //                0, 0,  //initX, initY
 //                0, 0); //xPad, yPad
+
+        tabsInitialized[i] = true;
+
     }
 
-    private void initializeBOQ() {
+    private void initializeBOQ(int i) {
         landPerimeter.requestFocus();
         landPerimeter.selectAll();
         DEFAULT_TEXT_COLOR = landPerimeter.getForeground();
+        tabsInitialized[i] = true;
     }
 
 
 
     void initializeDialog() {
+
 
         for (int i = 0; i < panel.getTabCount(); i++) {
             panel.setEnabledAt(i, false);
