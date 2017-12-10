@@ -67,6 +67,10 @@ public class Alternative {
 
     public void calculateCF(String elementName) {
 
+        resourcesCF = new LinkedHashMap<>();
+        deliveryCF = new LinkedHashMap<>();
+        equipmentCF = new LinkedHashMap<>();
+
         double buildingCoEfficient = 0;
         if(elementName.toLowerCase().contains("roof") || elementName.toLowerCase().contains("structure")) {
             buildingCoEfficient = BillOfQuantities.i().getLandArea()
